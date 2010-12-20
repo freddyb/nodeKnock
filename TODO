@@ -1,0 +1,10 @@
+Known Issues/Problems
+- proof of concept. no real port-opening/-closing
+- lot's of confusion on mixed use of strings like '0F' and ints like '15'
+- tested with linux only
+- the cool, polyglott config-file format exposes both client and server toward
+    a command execution vulnerability if a local attacker has write-access.
+- utilizing the timestamp for authentication requires us to have synchronous
+     time on client and server.
+- hash-strength is limited and possibly bad.
+    Idea: randomize substring-slicing of hash and take e.g. lowest tstamp byte?

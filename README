@@ -2,21 +2,38 @@ nodeKnock 0.1 by freddyb
      for nodeJS 0.2.5
 
 FAQ
+
+Q: What is nodeKnock, what does it do?
+A: nodeKnock is going to be (i.e. it IS NOT YET) a port knocking tool written
+    with nodeJS - just for fun.
+   Its protocol is designed under the assumption that the port is known to
+   client and server beforehand, i.e. the port is not and should never be
+   transmitted over the wire. Apart from the port, both partys already have to
+   share a common secret.
+   The current state (0.1) only implements the authentication between client and
+   server. The server's reactions on the client's authentication are yet to be
+   completed. It is not completely decided whether nodeKnock will handle the
+   transmission to the protected port by itself or if the successful
+   authentication will solely trigger an iptables-command (maybe something
+   customizable?).
+
 Q: What is the secret?
-A: The secret is to be defined a priori in nodeKnock.cfg
+A: The secret is to be defined a priori in nodeKnock.cfg. It's a string of
+    arbitrary length.
 
 Q: How long does an authorization last?
-A: User-defined amount of seconds in config['duration'] (nodeKnock.cfg)
+A: User-defined amount of seconds in config['duration'] (nodeKnock.cfg). If no
+    duration is specified the default value of 3600 is used.
 
 Q: Why do I have to set my own IP for the client?
-A: Because the user usually knows best :)
+A: Because the user usually knows best ;)
 
 Protocol (abstract):
-- One-Step Protocol
-- Client sends header, timestamp, sha1(client_ip + secret + timestamp')
-- Server decides whether timestamp is not too old and builds his own
-  sha1(client_ip + secret + timestamp'). When matching, the server adds
-  client_ip to the list of authorized IPs.
+- One-Way Protocol
+- Client sends header, timestamp, sha1(client_ip + secret + timestamp)
+- Server decides whether timestamp is not too old and builds his own hash based
+  on the timestamp provided and the client-ip extracted from the IP header.
+  When both hashes match, the server adds client_ip to the list of authorized IPs.
 
 Protocol (detailed):
 - The protocol is underlying ICMP Echo Requests. Usually Echo Requests leave
@@ -28,15 +45,3 @@ Protocol (detailed):
    client-ip, secret, timestamp.
      all inputs are transformed into strings on beforehand.
      e.g. sha1('127.0.0.1'+'foobar'+'1234567').
-
-
-Known Issues/Problems
-- proof of concept. no real port-opening/-closing
-- lot's of confusion on mixed use of strings like '0F' and ints like '15'
-- tested with linux only
-- the cool, polyglott config-file format exposes both client and server toward
-    a command execution vulnerability if a local attacker has write-access.
-- utilizing the timestamp for authentication requires us to have synchronous
-     time on client and server.
-- hash-strength is limited and possibly bad.
-    Idea: randomize substring-slicing of hash and take e.g. lowest tstamp byte?
