@@ -1,4 +1,4 @@
-nodeKnock 0.1 by freddyb
+nodeKnock 0.2 by freddyb
      for nodeJS 0.2.5
 
 FAQ
@@ -10,16 +10,17 @@ A: nodeKnock is going to be (i.e. it IS NOT YET) a port knocking tool written
    client and server beforehand, i.e. the port is not and should never be
    transmitted over the wire. Apart from the port, both partys already have to
    share a common secret.
-   The current state (0.1) only implements the authentication between client and
-   server. The server's reactions on the client's authentication are yet to be
-   completed. It is not completely decided whether nodeKnock will handle the
-   transmission to the protected port by itself or if the successful
-   authentication will solely trigger an iptables-command (maybe something
+   The current state (0.2) only implements the authentication between client and
+   server and a simple iptables-based reaction.
+   It is not completely decided whether nodeKnock should handle the
+   transmission to the protected port by itself (like a proxy) or if the
+   successful will still trigger only an iptables-command (or maybe something
    customizable?).
 
 Q: What is the secret?
 A: The secret is to be defined a priori in nodeKnock.cfg. It's a string of
-    arbitrary length.
+    arbitrary length. It is never transmitted in the clear. Still, you shouldn't
+    set your config file world-readable.
 
 Q: How long does an authorization last?
 A: User-defined amount of seconds in config['duration'] (nodeKnock.cfg). If no

@@ -6,5 +6,6 @@ may have made some blatantly stupid mistakes.
 It's also important to know that a local attacker with write permissions on the
 config will be able to execute arbitrary commands as the user running the
 client/server reading the specific file.
+A world-readable config file will leak your secret.
 
 For other known weaknesses and issues see TODO.

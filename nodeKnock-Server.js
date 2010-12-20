@@ -1,48 +1,7 @@
 #!/usr/bin/env node
 /*******************************************************************************
- * nodeKnock 0.1 by freddyb
+ * nodeKnock 0.2 by freddyb
  *      for nodeJS 0.2.5
- *
- * FAQ
- * Q: What is the secret?
- * A: The secret is to be defined a priori and set nodeKnock.cfg
- *
- * Q: How long does an authorization last?
- * A: User-defined amount of seconds in config['duration'] (nodeKnock.cfg)
- *
- * Q: Why do I have to set my own IP for the client?
- * A: Because the user usually knows best :)
- *
- * Protocol (abstract):
- * - One-Step Protocol
- * - Client sends header, timestamp, sha1(client_ip + secret + timestamp')
- * - Server decides whether timestamp is not too old and builds his own
- *   sha1(client_ip + secret + timestamp'). When matching, the server adds
- *   client_ip to the list of authorized IPs.
- *
- * Protocol (detailed):
- * - The protocol is underlying ICMP Echo Requests. Usually Echo Requests leave
- *   room for a few custom bytes of our own. We use them to send messages to
- *   the server.
- *   The first three bytes are (probably subject to change for future nodeKnock
- *   versions) 0x786875. After that, the client will send a 4 Byte timestamp
- *   (the highest byte first) followed by 9 bytes of the sha1 sum of:
- *    client-ip, secret, timestamp.
- *      all inputs are transformed into strings on beforehand.
- *      e.g. sha1('127.0.0.1'+'foobar'+'1234567').
- *
- *
- * Known Issues/Problems
- * - proof of concept. no real port-opening/-closing
- * - lot's of confusion on mixed use of strings like '0F' and ints like '15'
- * - tested with linux only
- * - the cool, polyglott config-file format exposes both client and server toward
- *     a command execution vulnerability if a local attacker has write-access.
- * - utilizing the timestamp for authentication requires us to have synchronous
- *      time on client and server.
- * - hash-strength is limited and possibly bad.
- *     Idea: randomize substring-slicing of hash and take e.g. lowest tstamp byte?
- *
  ******************************************************************************/
 
 // Constants
@@ -94,18 +53,43 @@ function doHash(ip, ts) {
     }
     return arr; // output: decimal
 }
-function addIPtoWhitelist(i) {
-    sys.puts("I would add "+ i + " to my whitelist. If I just had any :(");
+function addIPtoWhitelist(ip) {
+    //iptables -A INPUT -s <IP> -p tcp --dport 8000 -j ACCEPT
+    argsAdd = ['-A', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', '8000', '-j', 'ACCEPT'];
+    argsDel = ['-D', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', '8000', '-j', 'ACCEPT'];
+    ipt = spawn('iptables', argsAdd);
+
+    ipt.on('exit', function (code) {
+        if (code !== 0) {
+            sys.puts('ERROR: Could not run iptables to add '+ ip +' (' + code +')');
+        }
+        else {
+            sys.puts("Added "+ip+" to the Whitelist!");
+        }
+    });
+    setTimeout(delIPfromWhitelist, config['duration']*1000, argsDel, ip)
+}
+function delIPfromWhitelist(argsD, ip) {
+    ipt = spawn('iptables', argsD);
+    ipt.on('exit', function (code) {
+        if (code !== 0) {
+            sys.puts('ERROR: Could not REMOVE '+ip+' from iptables-whitelist (' + code +')');
+        }
+        else {
+            sys.puts("Removed "+ip+" from the Whitelist!");
+        }
+    });
 }
 
+// Starting here
 var fs = require("fs"), crypto = require("crypto");
 var sys = require("sys"), pcap = require("pcap"), pcap_session;
-
+var spawn = require('child_process').spawn,
 
 cfg = fs.readFileSync('nodeKnock.cfg'); // synchronous in nodeJS. NUUUU :(
 eval(cfg.toString());
 
-if (!config.secret || !config.host) {
+if (!config.secret || !config.host || !config.port) {
     process.exit(1);
 }
 if (!config.duration)
@@ -115,7 +99,7 @@ if (process.argv.length > 3) {
     sys.error("usage: simple_capture interface");
     process.exit(1);
 }
-pcap_session = pcap.createSession(process.argv[2], 'icmp');
+pcap_session = pcap.createSession(process.argv[2], 'icmp'); // only capture icmp
 sys.puts(pcap.lib_version);
 
 // Print listening device with address

@@ -1,5 +1,4 @@
 Known Issues/Problems
-- proof of concept. no real port-opening/-closing
 - lot's of confusion on mixed use of strings like '0F' and ints like '15'
 - tested with linux only
 - the cool, polyglott config-file format exposes both client and server toward
@@ -7,4 +6,7 @@ Known Issues/Problems
 - utilizing the timestamp for authentication requires us to have synchronous
      time on client and server.
 - hash-strength is limited and possibly bad.
-    Idea: randomize substring-slicing of hash and take e.g. lowest tstamp byte?
+    when using ping, we are limited to 17bytes worth of information.
+    Idea 0: use 1 byte less and transmit substr(hash,byte). <- meh
+    Idea 1: randomize substring-slicing of hash and take e.g. lowest tstamp byte
+             as input
