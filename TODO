@@ -1,6 +1,7 @@
 Known Issues/Problems
 - lot's of confusion on mixed use of strings like '0F' and ints like '15'
 - tested with linux only
+- Let's try building the client in a simple bash script instead of python
 - the cool, polyglott config-file format exposes both client and server toward
     a command execution vulnerability if a local attacker has write-access.
 - utilizing the timestamp for authentication requires us to have synchronous

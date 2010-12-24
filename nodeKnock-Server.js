@@ -31,7 +31,7 @@ function getTimestamp() {
 }
 function chkTimeStamp(givenTs) {
     // Compare given Timestatmp with current
-    THRESHOLD = 2; // request packet MUST NOT take longer than *these* to arrive
+    THRESHOLD = 2; // allow time difference of 2 seconds at most
     cur = getTimestamp();
     if (givenTs[0] == cur[0] && givenTs[1] == cur[1] && givenTs[2] == cur[2]) {
             if ((cur[3] - givenTs[3]) < THRESHOLD)
@@ -56,7 +56,7 @@ function doHash(ip, ts) {
 function addIPtoWhitelist(ip) {
     //iptables -A INPUT -s <IP> -p tcp --dport 8000 -j ACCEPT
     argsAdd = ['-A', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', config['port'], '-j', 'ACCEPT'];
-    argsDel = ['-D', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', config['port']', '-j', 'ACCEPT'];
+    argsDel = ['-D', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', config['port'], '-j', 'ACCEPT'];
     ipt = spawn('iptables', argsAdd);
 
     ipt.on('exit', function (code) {
@@ -99,7 +99,7 @@ if (process.argv.length > 3) {
     sys.error("usage: simple_capture interface");
     process.exit(1);
 }
-pcap_session = pcap.createSession(process.argv[2], 'icmp'); // only capture icmp
+pcap_session = pcap.createSession(process.argv[2], 'icmp'); // capture icmp only
 sys.puts(pcap.lib_version);
 
 // Print listening device with address
