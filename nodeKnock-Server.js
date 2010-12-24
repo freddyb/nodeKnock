@@ -55,8 +55,8 @@ function doHash(ip, ts) {
 }
 function addIPtoWhitelist(ip) {
     //iptables -A INPUT -s <IP> -p tcp --dport 8000 -j ACCEPT
-    argsAdd = ['-A', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', '8000', '-j', 'ACCEPT'];
-    argsDel = ['-D', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', '8000', '-j', 'ACCEPT'];
+    argsAdd = ['-A', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', config['port'], '-j', 'ACCEPT'];
+    argsDel = ['-D', 'INPUT', '-s', ip, '-p', 'tcp', '--dport', config['port']', '-j', 'ACCEPT'];
     ipt = spawn('iptables', argsAdd);
 
     ipt.on('exit', function (code) {
