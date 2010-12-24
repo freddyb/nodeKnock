@@ -1,11 +1,14 @@
 Security Considerations
 
-Although I am quite convinced that this tool does what it's supposed to do I
+- Although I am quite convinced that this tool does what it's supposed to do I
 must admit, that I have never looked at any other port knocking tool's code and
 may have made some blatantly stupid mistakes.
-It's also important to know that a local attacker with write permissions on the
-config will be able to execute arbitrary commands as the user running the
+- It's also important to know that a local attacker with write permissions on
+the config will be able to execute arbitrary commands as the user running the
 client/server reading the specific file.
-A world-readable config file will leak your secret.
+- A world-readable config file will leak your secret.
+- We're relying on node-pcap here. All dependencies might introduce their own
+flaws.
+
 
 For other known weaknesses and issues see TODO.

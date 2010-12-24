@@ -10,3 +10,7 @@ Known Issues/Problems
     Idea 0: use 1 byte less and transmit substr(hash,byte). <- meh
     Idea 1: randomize substring-slicing of hash and take e.g. lowest tstamp byte
              as input
+- We could allow more than one predefined port/secret pair, but require the
+computation of n (i.e. amount of pairs) hashes until for verification. One
+invalid request will multiply our server-side computational cost. I suppose this
+is a rather stupid idea :).

@@ -1,6 +1,6 @@
 config = {}
 config['host'] = 'server.example.org' # the server to knock on (client)
-config['secret'] = "DEADBEEF" # this is also for the server (both)
+config['secret'] = "replacewithlongandsecretwordthatishardlybeingbruteforced" # this is also for the server (both)
 config['port'] = 8000 # the port to be opened (server)
 config['duration'] = 20 # (server)
 config['own_ip'] = '192.168.1.99' # the ip that wants to knock. MUST be correct. (client)
